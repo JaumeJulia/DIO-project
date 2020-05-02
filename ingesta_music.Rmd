@@ -1,0 +1,423 @@
+---
+title: "Fase2"
+author: "JOJOOOOO DIOOOOOO"
+date: "21/4/2020"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+
+
+[R for Data Science](https://r4ds.had.co.nz/)
+
+
+
+```{r}
+meta_datos=read_csv("artists.csv")
+glimpse(meta_datos)# alternativa a str
+meta_datos=meta_datos %>% rename(artist_id=id)
+glimpse(meta_datos)
+```
+
+
+```{r}
+albums=read_csv("albums.csv")
+glimpse(albums)# alternativa a str
+```
+
+
+```{r}
+modelo_datos=albums %>%  right_join(meta_datos,by="artist_id")
+```
+
+
+
+#Estadisticos descriptivos basicos globales
+
+```{r, include=FALSE}
+#Estadisticos descriptivos basicos globales
+tablaGlobal1<- modelo_datos %>% 
+  summarise(count=n(),
+            Media_Rating_RS=
+              round(mean(num_of_tracks,na.rm=TRUE),2),
+            Median_Rating_RS=
+              median(num_of_tracks,na.rm=TRUE),
+            Sd_Rating=
+              sd(num_of_tracks,na.rm=TRUE),
+            Max_Rating_RS=
+              max(num_of_tracks,na.rm=TRUE),
+            Min_Rating_RS=
+              min(num_of_tracks,na.rm = TRUE))
+#knitr::kable(tablaGlobal1,"latex")
+
+tablaGlobal2<- modelo_datos %>% 
+  summarise(count=n(),
+            Media_Rating_RS=
+              round(mean(num_of_sales,na.rm=TRUE),2),
+            Median_Rating_RS=
+              median(num_of_sales,na.rm=TRUE),
+            Sd_Rating=
+              sd(num_of_sales,na.rm=TRUE),
+            Max_Rating_RS=
+              max(num_of_sales,na.rm=TRUE),
+            Min_Rating_RS=
+              min(num_of_sales,na.rm = TRUE))
+#knitr::kable(tablaGlobal2,"latex")
+
+tablaGlobal3<- modelo_datos %>% 
+  summarise(count=n(),
+            Media_Rating_RS=
+              round(mean(rolling_stone_critic,na.rm=TRUE),2),
+            Median_Rating_RS=
+              median(rolling_stone_critic,na.rm=TRUE),
+            Sd_Rating=
+              sd(rolling_stone_critic,na.rm=TRUE),
+            Max_Rating_RS=
+              max(rolling_stone_critic,na.rm=TRUE),
+            Min_Rating_RS=
+              min(rolling_stone_critic,na.rm = TRUE))
+#knitr::kable(tablaGlobal3,"latex")
+
+tablaGlobal4<- modelo_datos %>% 
+  summarise(count=n(),
+            Media_Rating_RS=
+              round(mean(mtv_critic,na.rm=TRUE),2),
+            Median_Rating_RS=
+              median(mtv_critic,na.rm=TRUE),
+            Sd_Rating=
+              sd(mtv_critic,na.rm=TRUE),
+            Max_Rating_RS=
+              max(mtv_critic,na.rm=TRUE),
+            Min_Rating_RS=
+              min(mtv_critic,na.rm = TRUE))
+#knitr::kable(tablaGlobal4,"latex")
+
+tablaGlobal5<- modelo_datos %>% 
+  summarise(count=n(),
+            Media_Rating_RS=
+              round(mean(music_maniac_critic,na.rm=TRUE),2),
+            Median_Rating_RS=
+              median(music_maniac_critic,na.rm=TRUE),
+            Sd_Rating=
+              sd(music_maniac_critic,na.rm=TRUE),
+            Max_Rating_RS=
+              max(music_maniac_critic,na.rm=TRUE),
+            Min_Rating_RS=
+              min(music_maniac_critic,na.rm = TRUE))
+#knitr::kable(tablaGlobal5,"latex")
+```
+#Estadisticos descriptivos basicos agrupados
+Agrupados por Genero
+```{r, include=FALSE}
+
+#Estadisticos descriptivos agrupados basicos
+
+tabla1<- modelo_datos %>% group_by(genre) %>% 
+  summarise(count=n(),
+            Media_Rating_RS=
+              round(mean(num_of_tracks,na.rm=TRUE),2),
+            Median_Rating_RS=
+              median(num_of_tracks,na.rm=TRUE),
+            Sd_Rating=
+              sd(num_of_tracks,na.rm=TRUE),
+            Max_Rating_RS=
+              max(num_of_tracks,na.rm=TRUE),
+            Min_Rating_RS=
+              min(num_of_tracks,na.rm = TRUE))
+#knitr::kable(tabla1,"latex")
+
+tabla2<- modelo_datos %>% group_by(genre) %>% 
+  summarise(count=n(),
+            Media_Rating_RS=
+              round(mean(num_of_sales,na.rm=TRUE),2),
+            Median_Rating_RS=
+              median(num_of_sales,na.rm=TRUE),
+            Sd_Rating=
+              sd(num_of_sales,na.rm=TRUE),
+            Max_Rating_RS=
+              max(num_of_sales,na.rm=TRUE),
+            Min_Rating_RS=
+              min(num_of_sales,na.rm = TRUE))
+#knitr::kable(tabla2,"latex")
+
+tabla3<- modelo_datos %>% group_by(genre) %>% 
+  summarise(count=n(),
+            Media_Rating_RS=
+              round(mean(rolling_stone_critic,na.rm=TRUE),2),
+            Median_Rating_RS=
+              median(rolling_stone_critic,na.rm=TRUE),
+            Sd_Rating=
+              sd(rolling_stone_critic,na.rm=TRUE),
+            Max_Rating_RS=
+              max(rolling_stone_critic,na.rm=TRUE),
+            Min_Rating_RS=
+              min(rolling_stone_critic,na.rm = TRUE))
+#knitr::kable(tabla3,"latex")
+
+tabla4<- modelo_datos %>% group_by(genre) %>% 
+  summarise(count=n(),
+            Media_Rating_RS=
+              round(mean(mtv_critic,na.rm=TRUE),2),
+            Median_Rating_RS=
+              median(mtv_critic,na.rm=TRUE),
+            Sd_Rating=
+              sd(mtv_critic,na.rm=TRUE),
+            Max_Rating_RS=
+              max(mtv_critic,na.rm=TRUE),
+            Min_Rating_RS=
+              min(mtv_critic,na.rm = TRUE))
+#knitr::kable(tabla4,"latex")
+
+tabla5<- modelo_datos %>% group_by(genre) %>% 
+  summarise(count=n(),
+            Media_Rating_RS=
+              round(mean(music_maniac_critic,na.rm=TRUE),2),
+            Median_Rating_RS=
+              median(music_maniac_critic,na.rm=TRUE),
+            Sd_Rating=
+              sd(music_maniac_critic,na.rm=TRUE),
+            Max_Rating_RS=
+              max(music_maniac_critic,na.rm=TRUE),
+            Min_Rating_RS=
+              min(music_maniac_critic,na.rm = TRUE))
+#knitr::kable(tabla5,"latex")
+
+```
+Agrupados por Album
+```{r, include=FALSE}
+
+#Estadisticos descriptivos agrupados basicos
+
+tabla1<- modelo_datos %>% group_by(album_title) %>% 
+  summarise(count=n(),
+            Media_Rating_RS=
+              round(mean(num_of_tracks,na.rm=TRUE),2),
+            Median_Rating_RS=
+              median(num_of_tracks,na.rm=TRUE),
+            Sd_Rating=
+              sd(num_of_tracks,na.rm=TRUE),
+            Max_Rating_RS=
+              max(num_of_tracks,na.rm=TRUE),
+            Min_Rating_RS=
+              min(num_of_tracks,na.rm = TRUE))
+#knitr::kable(tabla1,"latex")
+
+tabla2<- modelo_datos %>% group_by(album_title) %>% 
+  summarise(count=n(),
+            Media_Rating_RS=
+              round(mean(num_of_sales,na.rm=TRUE),2),
+            Median_Rating_RS=
+              median(num_of_sales,na.rm=TRUE),
+            Sd_Rating=
+              sd(num_of_sales,na.rm=TRUE),
+            Max_Rating_RS=
+              max(num_of_sales,na.rm=TRUE),
+            Min_Rating_RS=
+              min(num_of_sales,na.rm = TRUE))
+#knitr::kable(tabla2,"latex")
+
+tabla3<- modelo_datos %>% group_by(album_title) %>% 
+  summarise(count=n(),
+            Media_Rating_RS=
+              round(mean(rolling_stone_critic,na.rm=TRUE),2),
+            Median_Rating_RS=
+              median(rolling_stone_critic,na.rm=TRUE),
+            Sd_Rating=
+              sd(rolling_stone_critic,na.rm=TRUE),
+            Max_Rating_RS=
+              max(rolling_stone_critic,na.rm=TRUE),
+            Min_Rating_RS=
+              min(rolling_stone_critic,na.rm = TRUE))
+#knitr::kable(tabla3,"latex")
+
+tabla4<- modelo_datos %>% group_by(album_title) %>% 
+  summarise(count=n(),
+            Media_Rating_RS=
+              round(mean(mtv_critic,na.rm=TRUE),2),
+            Median_Rating_RS=
+              median(mtv_critic,na.rm=TRUE),
+            Sd_Rating=
+              sd(mtv_critic,na.rm=TRUE),
+            Max_Rating_RS=
+              max(mtv_critic,na.rm=TRUE),
+            Min_Rating_RS=
+              min(mtv_critic,na.rm = TRUE))
+#knitr::kable(tabla4,"latex")
+
+tabla5<- modelo_datos %>% group_by(album_title) %>% 
+  summarise(count=n(),
+            Media_Rating_RS=
+              round(mean(music_maniac_critic,na.rm=TRUE),2),
+            Median_Rating_RS=
+              median(music_maniac_critic,na.rm=TRUE),
+            Sd_Rating=
+              sd(music_maniac_critic,na.rm=TRUE),
+            Max_Rating_RS=
+              max(music_maniac_critic,na.rm=TRUE),
+            Min_Rating_RS=
+              min(music_maniac_critic,na.rm = TRUE))
+#knitr::kable(tabla5,"latex")
+
+```
+
+Agrupados por año
+
+```{r, include=FALSE}
+
+#Estadisticos descriptivos agrupados basicos
+
+tabla1<- modelo_datos %>% group_by(year_of_pub) %>% 
+  summarise(count=n(),
+            Media_Rating_RS=
+              round(mean(num_of_tracks,na.rm=TRUE),2),
+            Median_Rating_RS=
+              median(num_of_tracks,na.rm=TRUE),
+            Sd_Rating=
+              sd(num_of_tracks,na.rm=TRUE),
+            Max_Rating_RS=
+              max(num_of_tracks,na.rm=TRUE),
+            Min_Rating_RS=
+              min(num_of_tracks,na.rm = TRUE))
+#knitr::kable(tabla1,"latex")
+
+tabla2<- modelo_datos %>% group_by(year_of_pub) %>% 
+  summarise(count=n(),
+            Media_Rating_RS=
+              round(mean(num_of_sales,na.rm=TRUE),2),
+            Median_Rating_RS=
+              median(num_of_sales,na.rm=TRUE),
+            Sd_Rating=
+              sd(num_of_sales,na.rm=TRUE),
+            Max_Rating_RS=
+              max(num_of_sales,na.rm=TRUE),
+            Min_Rating_RS=
+              min(num_of_sales,na.rm = TRUE))
+#knitr::kable(tabla2,"latex")
+
+tabla3<- modelo_datos %>% group_by(year_of_pub) %>% 
+  summarise(count=n(),
+            Media_Rating_RS=
+              round(mean(rolling_stone_critic,na.rm=TRUE),2),
+            Median_Rating_RS=
+              median(rolling_stone_critic,na.rm=TRUE),
+            Sd_Rating=
+              sd(rolling_stone_critic,na.rm=TRUE),
+            Max_Rating_RS=
+              max(rolling_stone_critic,na.rm=TRUE),
+            Min_Rating_RS=
+              min(rolling_stone_critic,na.rm = TRUE))
+#knitr::kable(tabla3,"latex")
+
+tabla4<- modelo_datos %>% group_by(year_of_pub) %>% 
+  summarise(count=n(),
+            Media_Rating_RS=
+              round(mean(mtv_critic,na.rm=TRUE),2),
+            Median_Rating_RS=
+              median(mtv_critic,na.rm=TRUE),
+            Sd_Rating=
+              sd(mtv_critic,na.rm=TRUE),
+            Max_Rating_RS=
+              max(mtv_critic,na.rm=TRUE),
+            Min_Rating_RS=
+              min(mtv_critic,na.rm = TRUE))
+#knitr::kable(tabla4,"latex")
+
+tabla5<- modelo_datos %>% group_by(year_of_pub) %>% 
+  summarise(count=n(),
+            Media_Rating_RS=
+              round(mean(music_maniac_critic,na.rm=TRUE),2),
+            Median_Rating_RS=
+              median(music_maniac_critic,na.rm=TRUE),
+            Sd_Rating=
+              sd(music_maniac_critic,na.rm=TRUE),
+            Max_Rating_RS=
+              max(music_maniac_critic,na.rm=TRUE),
+            Min_Rating_RS=
+              min(music_maniac_critic,na.rm = TRUE))
+#knitr::kable(tabla5,"latex")
+
+```
+
+Agrupados por nacion
+
+```{r, include=FALSE}
+
+#Estadisticos descriptivos agrupados basicos
+
+tabla1<- modelo_datos %>% group_by(country) %>% 
+  summarise(count=n(),
+            Media_Rating_RS=
+              round(mean(num_of_tracks,na.rm=TRUE),2),
+            Median_Rating_RS=
+              median(num_of_tracks,na.rm=TRUE),
+            Sd_Rating=
+              sd(num_of_tracks,na.rm=TRUE),
+            Max_Rating_RS=
+              max(num_of_tracks,na.rm=TRUE),
+            Min_Rating_RS=
+              min(num_of_tracks,na.rm = TRUE))
+#knitr::kable(tabla1,"latex")
+
+tabla2<- modelo_datos %>% group_by(country) %>% 
+  summarise(count=n(),
+            Media_Rating_RS=
+              round(mean(num_of_sales,na.rm=TRUE),2),
+            Median_Rating_RS=
+              median(num_of_sales,na.rm=TRUE),
+            Sd_Rating=
+              sd(num_of_sales,na.rm=TRUE),
+            Max_Rating_RS=
+              max(num_of_sales,na.rm=TRUE),
+            Min_Rating_RS=
+              min(num_of_sales,na.rm = TRUE))
+#knitr::kable(tabla2,"latex")
+
+tabla3<- modelo_datos %>% group_by(country) %>% 
+  summarise(count=n(),
+            Media_Rating_RS=
+              round(mean(rolling_stone_critic,na.rm=TRUE),2),
+            Median_Rating_RS=
+              median(rolling_stone_critic,na.rm=TRUE),
+            Sd_Rating=
+              sd(rolling_stone_critic,na.rm=TRUE),
+            Max_Rating_RS=
+              max(rolling_stone_critic,na.rm=TRUE),
+            Min_Rating_RS=
+              min(rolling_stone_critic,na.rm = TRUE))
+#knitr::kable(tabla3,"latex")
+
+tabla4<- modelo_datos %>% group_by(country) %>% 
+  summarise(count=n(),
+            Media_Rating_RS=
+              round(mean(mtv_critic,na.rm=TRUE),2),
+            Median_Rating_RS=
+              median(mtv_critic,na.rm=TRUE),
+            Sd_Rating=
+              sd(mtv_critic,na.rm=TRUE),
+            Max_Rating_RS=
+              max(mtv_critic,na.rm=TRUE),
+            Min_Rating_RS=
+              min(mtv_critic,na.rm = TRUE))
+#knitr::kable(tabla4,"latex")
+
+tabla5<- modelo_datos %>% group_by(country) %>% 
+  summarise(count=n(),
+            Media_Rating_RS=
+              round(mean(music_maniac_critic,na.rm=TRUE),2),
+            Median_Rating_RS=
+              median(music_maniac_critic,na.rm=TRUE),
+            Sd_Rating=
+              sd(music_maniac_critic,na.rm=TRUE),
+            Max_Rating_RS=
+              max(music_maniac_critic,na.rm=TRUE),
+            Min_Rating_RS=
+              min(music_maniac_critic,na.rm = TRUE))
+#knitr::kable(tabla5,"latex")
+
+```
