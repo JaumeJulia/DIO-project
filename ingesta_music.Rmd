@@ -421,3 +421,51 @@ tabla5<- modelo_datos %>% group_by(country) %>%
 #knitr::kable(tabla5,"latex")
 
 ```
+
+
+#Analisis multidimensional
+·Comparando el numero de tracks con genero:
+Para llevar a cabo esta comparación, sacaremos la media, mediana y desviacion tipica del numero de tracks (numero de canciones por album) de una tabla agrupada por genero. Al hacer esto podremos ver si la cantidad de canciones de media tiene algun tipo de correlación con el género, y de ser asi habriamos encontrado una caracteristica que define al genero. 
+Nuestra apuesta es que no va a haber dicha correlación, puesto que el número de canciones por album aparenta ser un valor mas bien arbitrario (depende de la inspiración del artista y por supuesto del dinero que quiere invertir en el album) pero quizás haya géneros que tengan cierta correlación.
+
+```{r,include=FALSE}
+tabla1<- modelo_datos %>% group_by(genre) %>% 
+  summarise(count=n(),
+            Media_Rating_RS=
+              round(mean(num_of_tracks,na.rm=TRUE),2),
+            Median_Rating_RS=
+              median(num_of_tracks,na.rm=TRUE),
+            Sd_Rating=
+              sd(num_of_tracks,na.rm=TRUE),
+            Max_Rating_RS=
+              max(num_of_tracks,na.rm=TRUE),
+            Min_Rating_RS=
+              min(num_of_tracks,na.rm = TRUE))
+knitr::kable(tabla1,"latex")
+#Sacar la tabla y la grafica, si las medias entre los generos son parecidos o muy parecidos entonces no hay correlación, y si las medias son distintas tendremos que mirar individualmente cada genero; si este genero tiene una desviacion tipica muy baja, entonces se podria decir que si existe cierta correlación; si por lo contrario la desviacion es muy alta entonces no hay correlación
+```
+
+Falta escribir las conclusiones
+
+Comparando numero de pistas con Album
+Solo tendriamos que revisar la media, mediana y desviacion tipica del numero de tracks por album, solo sera un valor de cada. Tiene sentido hacer esta observacion para ver si los albums se les denomina albums por tener cierta cantidad de canciones o si realmente un artista puede llamar album a cualquier cantidad de canciones que decida en su momento. Es un hecho conocido que conjuntos de canciones mas reducidos toman nombres como "LP" y no album porque son producciones pequeñas, pero quizas es una discriminación que no tiene porque hacerse.
+Nuestra apuesta es que los albums van a tener una cantidad parecida de canciones, y por ende un album vendrá definido por un conjunto de canciones de un tamaño mas o menos predefinido.
+
+```{r}
+tabla1<- modelo_datos %>% group_by(album_title) %>% 
+  summarise(count=n(),
+            Media_Rating_RS=
+              round(mean(num_of_tracks,na.rm=TRUE),2),
+            Median_Rating_RS=
+              median(num_of_tracks,na.rm=TRUE),
+            Sd_Rating=
+              sd(num_of_tracks,na.rm=TRUE),
+            Max_Rating_RS=
+              max(num_of_tracks,na.rm=TRUE),
+            Min_Rating_RS=
+              min(num_of_tracks,na.rm = TRUE))
+knitr::kable(tabla1,"latex")
+#Sacamos la tabla, no hace falta grafica y simplemente interpretamos la media, mediana y desviacion tipica.
+```
+
+Falta escribir conclusiones
