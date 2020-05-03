@@ -1,0 +1,424 @@
+---
+title: "Fase2"
+author: "Ricardo Alberich"
+date: "21/4/2020"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+
+```{r}
+meta_datos=read_csv("artists.csv")
+glimpse(meta_datos)# alternativa a str
+meta_datos=meta_datos %>% rename(artist_id=id)
+glimpse(meta_datos)
+```
+
+
+```{r}
+albums=read_csv("albums.csv")
+glimpse(albums)# alternativa a str
+```
+
+
+```{r}
+datos=albums %>%  right_join(meta_datos,by="artist_id")
+modelo_datos <- na.omit(datos)
+```
+
+```{r,include=FALSE}
+library("tidyverse")
+library("rworldmap")
+rol_nacionalidad = meta_datos[c("role", "country")]
+for (i in unique(rol_nacionalidad$role)){
+  role = droplevels(rol_nacionalidad[rol_nacionalidad$role == i,])
+  role = data.frame(sort(table(role$country), decreasing = T))
+  worldMap = joinCountryData2Map(role, nameJoinColumn = "Var1", joinCode="NAME")
+colourPalette = RColorBrewer::brewer.pal(10, "Spectral")
+mapCountryData(worldMap, colourPalette = colourPalette, nameColumnToPlot="Freq", mapTitle = i )
+}
+```
+
+
+## Estadisticos descriptivos basicos globales
+1. _Por rating de Rolling Stone_
+```{r, include=TRUE}
+#Estadisticos descriptivos basicos globales
+colours <- c("red", "orange", "blue", "yellow", "green")
+tablaGlobal1<- modelo_datos %>% 
+  summarise(
+            Media_Num_Of_Tracks=
+              round(mean(num_of_tracks,na.rm=TRUE),2),
+            Median_Num_of_tracks=
+              median(num_of_tracks,na.rm=TRUE),
+            Sd_Num_of_tracks=
+              sd(num_of_tracks,na.rm=TRUE),
+            Max_Num_of_tracks=
+              max(num_of_tracks,na.rm=TRUE),
+            Min_Num_of_tracks=
+              min(num_of_tracks,na.rm = TRUE))
+knitr::kable(tablaGlobal1)
+barplot(t(as.matrix(tablaGlobal1)),beside=TRUE,col=colours,legend.text=TRUE,xlim=c(0,50),width=5)
+```
+Tras el cálculo en relación al número de tracks (**pistas**), podemos ver que el máximo de pistas en un álbum es de 15.El mínimo de pistas es de 2, pero de media los albumes suelen contener 8 pistas. Hay una desviacion tipica de 4 pistas.
+
+
+2. _Por numero de ventas_
+```{r,include=TRUE}
+colours <- c("red", "orange", "blue", "yellow", "green")
+tablaGlobal2<- modelo_datos %>% 
+  summarise(
+            Media_Num_Of_Sales=
+              round(mean(num_of_sales,na.rm=TRUE),2),
+            Median_Num_Of_Sales=
+              median(num_of_sales,na.rm=TRUE),
+            Sd_Num_Of_Sales=
+              sd(num_of_sales,na.rm=TRUE),
+            Max_Num_Of_Sales=
+              max(num_of_sales,na.rm=TRUE),
+            Min_Num_Of_Sales=
+              min(num_of_sales,na.rm = TRUE))
+knitr::kable(tablaGlobal2)
+barplot(t(as.matrix(tablaGlobal2)),beside=TRUE,col=colours,legend.text=TRUE,xlim=c(0,50),width=5)
+```
+Del estudio del número de ventas podemos ver que hay una __gran distancia__ entre el máximo de ventas (999994) y el mínimo (1009), esto es debido a que hemos tenido en cuenta una gran variedad de artista (exitosos como no tan exitosos). De media en nuestro date set ha habido un numero de ventas de medio millón de unidades, con una desviación de 288266 unidades.
+
+
+3. Por critica de Rolling Stone
+```{r,include=TRUE}
+colours <- c("red", "orange", "blue", "yellow", "green")
+tablaGlobal3<- modelo_datos %>% 
+  summarise(
+            Media_Rating_RS=
+              round(mean(rolling_stone_critic,na.rm=TRUE),2),
+            Median_Rating_RS=
+              median(rolling_stone_critic,na.rm=TRUE),
+            Sd_Rating=
+              sd(rolling_stone_critic,na.rm=TRUE),
+            Max_Rating_RS=
+              max(rolling_stone_critic,na.rm=TRUE),
+            Min_Rating_RS=
+              min(rolling_stone_critic,na.rm = TRUE))
+knitr::kable(tablaGlobal3)
+barplot(t(as.matrix(tablaGlobal3)),beside=TRUE,col=colours,legend.text=TRUE,xlim=c(0,50),width=5)
+
+```
+La máxima nota dada por la revista Rolling Stone, ha sido de un 5 y la mínima de de 0.5.De media tenemos que se ha dado una nota alrededor de 2.75 (las notas dadas por la revista van de 0.5 a 5 en intervalos de una __distancia__ de 0.5).
+
++ Por critica de MTV
+```{r, include=TRUE}
+colours <- c("red", "orange", "blue", "yellow", "green")
+tablaGlobal4<- modelo_datos %>% 
+  summarise(
+            Media_MTV=
+              round(mean(mtv_critic,na.rm=TRUE),2),
+            Median_MTV=
+              median(mtv_critic,na.rm=TRUE),
+            Sd_MTV=
+              sd(mtv_critic,na.rm=TRUE),
+            Max_MTV=
+              max(mtv_critic,na.rm=TRUE),
+            Min_MTV=
+              min(mtv_critic,na.rm = TRUE))
+knitr::kable(tablaGlobal4)
+barplot(t(as.matrix(tablaGlobal4)),beside=TRUE,col=colours,legend.text=TRUE,xlim=c(0,50),width=5)
+
+```
+Como con la revista Rolling Stone, MTV ha dado como nota máximo un 5 y mínima de 0.5.De media tenemos la misma que conseguimos con Rolling Stone: 2.75.Las notas va por niveles de diferencia 0.5 como en Rolling Stone.
+
++ Por critica de Music Maniac
+```{r,include=TRUE}
+colours <- c("red", "orange", "blue", "yellow", "green")
+tablaGlobal5<- modelo_datos %>% 
+  summarise(
+            Media_Rating_Maniac=
+              round(mean(music_maniac_critic,na.rm=TRUE),2),
+            Median_Rating_Maniac=
+              median(music_maniac_critic,na.rm=TRUE),
+            Sd_Music_Maniac=
+              sd(music_maniac_critic,na.rm=TRUE),
+            Max_Rating_Maniac=
+              max(music_maniac_critic,na.rm=TRUE),
+            Min_Rating_Maniac=
+              min(music_maniac_critic,na.rm = TRUE))
+knitr::kable(tablaGlobal5)
+barplot(t(as.matrix(tablaGlobal5)),beside=TRUE,col=colours,legend.text=TRUE,xlim=c(0,50),width=5)
+
+```
+Al igual que las anteriores revistas, el máximo es de 5 y el mínimo de 0.5. La media es la misma de 2.75. Viendo estos datos globales respecto a las notas dadas por las revistas, podría parecer que siguen unos gustos parecidos pero, como veremos a continuación en el análisis agrupado, en realidad no es así.
+* Estadisticos descriptivos basicos agrupados
++ Agrupados por genero
+
+```{r,include=FALSE}
+colours <- c("red", "orange", "blue", "yellow", "green")
+tabla2<- modelo_datos %>% group_by(genre) %>% 
+  summarise(
+            Media_num_of_sales=
+              round(mean(num_of_sales,na.rm=TRUE),2),
+            Median_num_of_sales=
+              median(num_of_sales,na.rm=TRUE),
+            Sd_num_of_sales=
+              sd(num_of_sales,na.rm=TRUE),
+            Max_num_of_sales=
+              max(num_of_sales,na.rm=TRUE),
+            Min_num_of_sales=
+              min(num_of_sales,na.rm = TRUE))
+knitr::kable(tabla2)
+#barplot(t(as.matrix(tabla2)), beside=TRUE)
+```
+
+```{r,include=FALSE}
+colours <- c("red", "orange", "blue", "yellow", "green")
+tabla3<- modelo_datos %>% group_by(genre) %>% 
+  summarise(
+            Media_Rating_RS=
+              round(mean(rolling_stone_critic,na.rm=TRUE),2),
+            Median_Rating_RS=
+              median(rolling_stone_critic,na.rm=TRUE),
+            Sd_Rating=
+              sd(rolling_stone_critic,na.rm=TRUE),
+            Max_Rating_RS=
+              max(rolling_stone_critic,na.rm=TRUE),
+            Min_Rating_RS=
+              min(rolling_stone_critic,na.rm = TRUE))
+knitr::kable(tabla3)
+
+```
+
+```{r,include=FALSE}
+colours <- c("red", "orange", "blue", "yellow", "green")
+tabla4<- modelo_datos %>% group_by(genre) %>% 
+  summarise(
+            Media_mtv_critic=
+              round(mean(mtv_critic,na.rm=TRUE),2),
+            Median_mtv_critic=
+              median(mtv_critic,na.rm=TRUE),
+            Sd_mtv_critic=
+              sd(mtv_critic,na.rm=TRUE),
+            Max_mtv_critic=
+              max(mtv_critic,na.rm=TRUE),
+            Min_mtv_critic=
+              min(mtv_critic,na.rm = TRUE))
+knitr::kable(tabla4)
+
+```
+
+```{r,include=FALSE}
+colours <- c("red", "orange", "blue", "yellow", "green")
+tabla5<- modelo_datos %>% group_by(genre) %>% 
+  summarise(
+            Media_maniac_critic=
+              round(mean(music_maniac_critic,na.rm=TRUE),2),
+            Median_maniac_critic=
+              median(music_maniac_critic,na.rm=TRUE),
+            Sd_maniac_critic=
+              sd(music_maniac_critic,na.rm=TRUE),
+            Max_maniac_critic=
+              max(music_maniac_critic,na.rm=TRUE),
+            Min_maniac_critic=
+              min(music_maniac_critic,na.rm = TRUE))
+knitr::kable(tabla5)
+
+```
++ Agrupados por Album
+```{r, include=FALSE}
+
+#Estadisticos descriptivos agrupados basicos
+colours <- c("red", "orange", "blue", "yellow", "green")
+tabla1<- modelo_datos %>% group_by(album_title) %>% 
+  summarise(
+            Media_num_of_tracks=
+              round(mean(num_of_tracks,na.rm=TRUE),2),
+            Median_num_of_tracks=
+              median(num_of_tracks,na.rm=TRUE),
+            Sd_num_of_tracks=
+              sd(num_of_tracks,na.rm=TRUE),
+            Max_num_of_tracks=
+              max(num_of_tracks,na.rm=TRUE),
+            Min_num_of_tracks=
+              min(num_of_tracks,na.rm = TRUE))
+knitr::kable(tabla1)
+```
+
+```{r,include=FALSE}
+colours <- c("red", "orange", "blue", "yellow", "green")
+tabla2<- modelo_datos %>% group_by(album_title) %>% 
+  summarise(
+            Media_num_of_sales=
+              round(mean(num_of_sales,na.rm=TRUE),2),
+            Median_num_of_sales=
+              median(num_of_sales,na.rm=TRUE),
+            Sd_num_of_sales=
+              sd(num_of_sales,na.rm=TRUE),
+            Max_num_of_sales=
+              max(num_of_sales,na.rm=TRUE),
+            Min_num_of_sales=
+              min(num_of_sales,na.rm = TRUE))
+knitr::kable(tabla2)
+```
+
+```{r,include=FALSE}
+colours <- c("red", "orange", "blue", "yellow", "green")
+tabla3<- modelo_datos %>% group_by(album_title) %>% 
+  summarise(
+            Media_rolling_stone_critic=
+              round(mean(rolling_stone_critic,na.rm=TRUE),2),
+            Median_rolling_stone_critic=
+              median(rolling_stone_critic,na.rm=TRUE),
+            Sd_rolling_stone_critic=
+              sd(rolling_stone_critic,na.rm=TRUE),
+            Max_rolling_stone_critic=
+              max(rolling_stone_critic,na.rm=TRUE),
+            Min_rolling_stone_critic=
+              min(rolling_stone_critic,na.rm = TRUE))
+knitr::kable(tabla3)
+```
+
+```{r,include=FALSE}
+colours <- c("red", "orange", "blue", "yellow", "green")
+tabla4<- modelo_datos %>% group_by(album_title) %>% 
+  summarise(
+            Media_mtv_critic=
+              round(mean(mtv_critic,na.rm=TRUE),2),
+            Median_mtv_critic=
+              median(mtv_critic,na.rm=TRUE),
+            Sd_mtv_critic=
+              sd(mtv_critic,na.rm=TRUE),
+            Max_mtv_critic=
+              max(mtv_critic,na.rm=TRUE),
+            Min_mtv_critic=
+              min(mtv_critic,na.rm = TRUE))
+knitr::kable(tabla4)
+```
+
+```{r,include=FALSE}
+colours <- c("red", "orange", "blue", "yellow", "green")
+tabla5<- modelo_datos %>% group_by(album_title) %>% 
+  summarise(
+            Media_music_maniac_critic=
+              round(mean(music_maniac_critic,na.rm=TRUE),2),
+            Median_music_maniac_critic=
+              median(music_maniac_critic,na.rm=TRUE),
+            Sd_music_maniac_critic=
+              sd(music_maniac_critic,na.rm=TRUE),
+            Max_music_maniac_critic=
+              max(music_maniac_critic,na.rm=TRUE),
+            Min_music_maniac_critic=
+              min(music_maniac_critic,na.rm = TRUE))
+knitr::kable(tabla5)
+
+```
+
++ _Agrupados por año_
+ 
+```{r, include=FALSE}
+
+#Estadisticos descriptivos agrupados basicos
+colours <- c("red", "orange", "blue", "yellow", "green")
+tabla1<- modelo_datos %>% group_by(year_of_pub) %>% 
+  summarise(
+            Media_num_of_tracks=
+              round(mean(num_of_tracks,na.rm=TRUE),2),
+            Median_num_of_tracks=
+              median(num_of_tracks,na.rm=TRUE),
+            Sd_num_of_tracks=
+              sd(num_of_tracks,na.rm=TRUE),
+            Max_num_of_tracks=
+              max(num_of_tracks,na.rm=TRUE),
+            Min_num_of_tracks=
+              min(num_of_tracks,na.rm = TRUE))
+knitr::kable(tabla1)
+```
+
+```{r, include=FALSE}
+colours <- c("red", "orange", "blue", "yellow", "green")
+tabla2<- modelo_datos %>% group_by(year_of_pub) %>% 
+  summarise(
+            Media_num_of_sales=
+              round(mean(num_of_sales,na.rm=TRUE),2),
+            Median_num_of_sales=
+              median(num_of_sales,na.rm=TRUE),
+            Sd_num_of_sales=
+              sd(num_of_sales,na.rm=TRUE),
+            Max_num_of_sales=
+              max(num_of_sales,na.rm=TRUE),
+            Min_num_of_sales=
+              min(num_of_sales,na.rm = TRUE))
+knitr::kable(tabla2)
+```
+
+
+# [Análisis Multidimensional: Relación entre Variables]
+
+
+
+1. Rating revistas con número de tracks
+```{r}
+  tracks_critica= modelo_datos %>% select(num_of_tracks,mtv_critic,rolling_stone_critic,music_maniac_critic)%>%na.omit
+  plot(tracks_critica)
+```
+
+```{r}
+cor(tracks_critica)
+```
+
+
+```{r}
+library(corrplot)
+corrplot(cor(tracks_critica))
+```
+El primer análisis multidimensional que haremos tendrá la finalidad de ver si hay alguna relación entre el número de pistas que tiene un álbum y las notas que recibe de las distintas revistas. 
+Lo hacemos porqué tenemos la sospecha de que el número de pistas puede influir en las notas que den las revistas,por una cuestión de gustos.En el caso que haya correlación queremos encontrar el número óptimo de pistas para recibir la mejor nota posible en las revistas.
+
+Como podemos ver mediante el análisis  entre el número de pistas y las distintas criticas de las revistas, no hay correlacion entre la nota dada por estas y el numero de pistas  de un album, es decir que un album por tener muchas pistas no tiene porqué tener mejor o peor nota, de cualquiera de las revistas.
+
+2. Comparacion de los ratings entre revistas
+```{r}
+ratings= modelo_datos %>% select(mtv_critic,rolling_stone_critic,music_maniac_critic)%>%na.omit
+plot(ratings)
+```
+
+```{r}
+cor(ratings)
+```
+
+
+```{r}
+library(corrplot)
+corrplot(cor(ratings))
+```
+
+
+3. Rating revistas con número de ventas
+```{r}
+ventas_critica= modelo_datos %>% select(num_of_sales,rolling_stone_critic,
+                                music_maniac_critic,mtv_critic) %>% na.omit()
+
+plot(ventas_critica)
+```
+
+
+
+```{r}
+plot(ventas_critica$num_of_sales/1000,ventas_critica$rolling_stone_critic)
+```
+
+
+
+```{r}
+glimpse(ventas_critica$rolling_stone_critic)
+ventas_critica10=cut(ventas_critica$num_of_sales,breaks=10)
+table(ventas_critica10,ventas_critica$rolling_stone_critic)
+```
+
+
+##Conclusiones: Interpretaciones Básicas del Análisis Exploratorio
+
+
+
